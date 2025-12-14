@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel CRUD API - Management Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-plane"></i> Travel Management Dashboard</h1>
+            <p>Manage your travel records with our interactive CRUD interface</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="add-travel">Add Travel</button>
+            <button class="tab-btn" data-tab="search-travel">Search Travel</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="section-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Travel Dashboard</h2>
+                <button class="btn btn-primary" onclick="refreshTravels()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-travels">0</h3>
+                        <p>Total Travels</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="upcoming-travels">0</h3>
+                        <p>Upcoming Travels</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="avg-cost">$0</h3>
+                        <p>Average Cost</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Travel Records Table -->
+            <div class="table-container">
+                <h3><i class="fas fa-list"></i> All Travel Records</h3>
+                <div class="table-wrapper">
+                    <table id="travels-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Departure</th>
+                                <th>Return</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Passengers</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="travels-tbody">
+                            <tr>
+                                <td colspan="9" class="loading">Loading travel records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Travel Tab -->
+        <div id="add-travel" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Travel</h2>
+            </div>
+            
+            <form id="travel-form" class="travel-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="origin">Origin *</label>
+                        <input type="text" id="origin" name="origin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination">Destination *</label>
+                        <input type="text" id="destination" name="destination" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="departureDate">Departure Date *</label>
+                        <input type="date" id="departureDate" name="departureDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="returnDate">Return Date *</label>
+                        <input type="date" id="returnDate" name="returnDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="travelType">Travel Type *</label>
+                        <select id="travelType" name="travelType" required>
+                            <option value="">Select Travel Type</option>
+                            <option value="Round-trip">Round-trip</option>
+                            <option value="One-way">One-way</option>
+                            <option value="Multi-city">Multi-city</option>
+                            <option value="Business">Business</option>
+                            <option value="Leisure">Leisure</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="passengers">Number of Passengers *</label>
+                        <input type="number" id="passengers" name="passengers" min="1" value="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price *</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency *</label>
+                        <select id="currency" name="currency" required>
+                            <option value="">Select Currency</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes about this travel..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Travel
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Search Travel Tab -->
+        <div id="search-travel" class="tab-content">
+            <div class="section-header">
+                <h2><i class="fas fa-search"></i> Search Travel Records</h2>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-tabs">
+                    <button class="search-tab-btn active" data-search-type="all">All Travels</button>
+                    <button class="search-tab-btn" data-search-type="destination">By Destination</button>
+                    <button class="search-tab-btn" data-search-type="origin">By Origin</button>
+                    <button class="search-tab-btn" data-search-type="type">By Type</button>
+                    <button class="search-tab-btn" data-search-type="price">By Price Range</button>
+                </div>
+
+                <div class="search-form-container">
+                    <form id="search-form" class="search-form">
+                        <div id="search-inputs">
+                            <!-- Dynamic search inputs will be inserted here -->
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="search-results" class="search-results">
+                <div class="results-header">
+                    <h3><i class="fas fa-list"></i> Search Results</h3>
+                    <span id="results-count">0 results found</span>
+                </div>
+                <div class="table-wrapper">
+                    <table id="search-results-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Departure</th>
+                                <th>Return</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Passengers</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results-tbody">
+                            <tr>
+                                <td colspan="8" class="no-results">Enter search criteria and click search to find travels</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Travel Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Travel</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <form id="edit-travel-form" class="travel-form">
+                <input type="hidden" id="edit-id" name="id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-origin">Origin *</label>
+                        <input type="text" id="edit-origin" name="origin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-destination">Destination *</label>
+                        <input type="text" id="edit-destination" name="destination" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-departureDate">Departure Date *</label>
+                        <input type="date" id="edit-departureDate" name="departureDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-returnDate">Return Date *</label>
+                        <input type="date" id="edit-returnDate" name="returnDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-travelType">Travel Type *</label>
+                        <select id="edit-travelType" name="travelType" required>
+                            <option value="">Select Travel Type</option>
+                            <option value="Round-trip">Round-trip</option>
+                            <option value="One-way">One-way</option>
+                            <option value="Multi-city">Multi-city</option>
+                            <option value="Business">Business</option>
+                            <option value="Leisure">Leisure</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-passengers">Number of Passengers *</label>
+                        <input type="number" id="edit-passengers" name="passengers" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-price">Price *</label>
+                        <input type="number" id="edit-price" name="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-currency">Currency *</label>
+                        <select id="edit-currency" name="currency" required>
+                            <option value="">Select Currency</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-notes">Notes</label>
+                    <textarea id="edit-notes" name="notes" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Travel
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification">
+        <span id="notification-message"></span>
+        <span class="notification-close" onclick="hideNotification()">&times;</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

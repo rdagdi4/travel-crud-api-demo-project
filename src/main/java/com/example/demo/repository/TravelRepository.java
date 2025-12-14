@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface TravelRepository extends JpaRepository<Travel, Long> {
+public interface TravelRepository extends JpaRepository<Travel, Long> { 
 
     // Find travels by destination
     List<Travel> findByDestinationContainingIgnoreCase(String destination);

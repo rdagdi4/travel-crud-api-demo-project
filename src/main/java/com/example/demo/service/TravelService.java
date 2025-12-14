@@ -25,7 +25,7 @@ public class TravelService {
     // Get all travels
     public List<Travel> getAllTravels() {
         return travelRepository.findAll();
-    }
+    } 
 
     // Get travel by ID
     public Optional<Travel> getTravelById(Long id) {
